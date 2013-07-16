@@ -14,6 +14,9 @@ Vagrant.configure('2') do |config|
     aws.region_config "us-west-2", :ami => 'ami-0358ce33'
     aws.region_config "eu-west-1", :ami => 'ami-c7c0d6b3'
 
+    # Run a simple provision script
+    config.vm.provision :shell, :path => 'bootstrap.sh'
+
     override.ssh.username = 'ec2-user'
   end
 end
