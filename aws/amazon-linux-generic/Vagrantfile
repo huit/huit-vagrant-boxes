@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+  config.vm.provider :aws do |aws, override|
+    aws.region          = 'us-east-1'
+    aws.instance_type   = 't1.micro'
+    aws.security_groups = 'vagrant'
+    aws.tags            = { 'Provisioner' => 'Vagrant' }
+
+    # Default to us-east-1, but if we are launching elsewhere...
+    aws.region_config "us-east-1", :ami => 'ami-05355a6c'
+    aws.region_config "us-west-1", :ami => 'ami-3ffed17a'
+    aws.region_config "us-west-2", :ami => 'ami-0358ce33'
+    aws.region_config "eu-west-1", :ami => 'ami-c7c0d6b3'
+
+    override.ssh.username = 'ec2-user'
+  end
+end

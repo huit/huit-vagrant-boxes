@@ -1,0 +1,3 @@
+# Generic Amazon Linux Box
+
+Defaults to installing the EBS-backed 64-bit Amazon Linux AMI on a t1.micro instance on us-east-1.  Installs Puppet package and customizes sudoers file.
