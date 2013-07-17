@@ -6,13 +6,15 @@ Vagrant.configure('2') do |config|
     aws.region          = 'us-east-1'
     aws.instance_type   = 't1.micro'
     aws.security_groups = 'vagrant'
+    aws.ami             = 'ami-05355a6c'
     aws.tags            = { 'Provisioner' => 'Vagrant' }
 
-    # Default to us-east-1, but if we are launching elsewhere...
-    aws.region_config "us-east-1", :ami => 'ami-05355a6c'
-    aws.region_config "us-west-1", :ami => 'ami-3ffed17a'
-    aws.region_config "us-west-2", :ami => 'ami-0358ce33'
-    aws.region_config "eu-west-1", :ami => 'ami-c7c0d6b3'
+    # Default AMI is for us-east-1, substitute the proper AMI if we are
+    # launching in a different region
+    aws.region_config 'us-east-1', :ami => 'ami-05355a6c'
+    aws.region_config 'us-west-1', :ami => 'ami-3ffed17a'
+    aws.region_config 'us-west-2', :ami => 'ami-0358ce33'
+    aws.region_config 'eu-west-1', :ami => 'ami-c7c0d6b3'
 
     # Run a simple provision script
     config.vm.provision :shell, :path => 'bootstrap.sh'
