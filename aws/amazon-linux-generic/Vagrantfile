@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure('2') do |config|
-  config.vm.provider :aws do |aws, override|
+  config.vm.provider :aws do |aws|
     aws.region          = 'us-east-1'
     aws.instance_type   = 't1.micro'
     aws.security_groups = 'vagrant'
@@ -11,14 +11,14 @@ Vagrant.configure('2') do |config|
 
     # Default AMI is for us-east-1, substitute the proper AMI if we are
     # launching in a different region
-    aws.region_config 'us-east-1', :ami => 'ami-05355a6c'
     aws.region_config 'us-west-1', :ami => 'ami-3ffed17a'
     aws.region_config 'us-west-2', :ami => 'ami-0358ce33'
     aws.region_config 'eu-west-1', :ami => 'ami-c7c0d6b3'
-
-    # Run a simple provision script
-    config.vm.provision :shell, :path => 'bootstrap.sh'
-
-    override.ssh.username = 'ec2-user'
   end
+
+  # Amazon Linux default user is ec2-user
+  config.ssh.username = 'ec2-user'
+
+  # Run a simple provision script to setup packages
+  config.vm.provision :shell, :path => 'bootstrap.sh'
 end
