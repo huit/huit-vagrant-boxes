@@ -29,6 +29,7 @@ Vagrant.configure('2') do |config|
     [[ "$(grep 'priority=0' /etc/yum.repos.d/puppetlabs.repo)" == "" ]] && sed -i '/enabled=1/ a priority=0' /etc/yum.repos.d/puppetlabs.repo
 
     # Install dependencies
+    yum clean all
     yum install -y git rubygems gcc libxml2-devel libxslt-devel puppet hiera
   EOT
 
