@@ -22,8 +22,8 @@ Vagrant.configure('2') do |config|
   # Run a simple provision script to setup packages
   config.vm.provision :shell, :inline => <<-EOT
     # Setup Puppet Labs repository for latest Puppet
-    rpm -q -i http://yum.puppetlabs.com/el/6Server/products/x86_64/puppetlabs-release-6-7.noarch.rpm
-    rpm -q --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+    rpm -Uvh http://yum.puppetlabs.com/el/6Server/products/x86_64/puppetlabs-release-6-7.noarch.rpm
+    rpm --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
 
     # Set priority of puppetlabs repo above Amazon repos
     [[ "$(grep 'priority=0' /etc/yum.repos.d/puppetlabs.repo)" == "" ]] && sed -i '/enabled=1/ a priority=0' /etc/yum.repos.d/puppetlabs.repo
