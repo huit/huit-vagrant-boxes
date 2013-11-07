@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+  config.vm.provider :aws do |aws|
+    aws.region          = 'us-east-1'
+    aws.instance_type   = 'm1.small'
+    aws.security_groups = 'vagrant'
+    aws.ami             = 'ami-35792c5c'
+    aws.tags            = { 'Provisioner' => 'Vagrant' }
+
+    # Default AMI is for us-east-1, substitute the proper AMI if we are
+    # launching in a different region
+    aws.region_config 'us-west-1', :ami => 'ami-687b4f2d'
+    aws.region_config 'us-west-2', :ami => 'ami-d03ea1e0'
+
+    # Use cloud-init to enable sudo without PTY for Vagrant with a boothook
+    # (See: https://github.com/mitchellh/vagrant-aws/issues/72#issuecomment-20384849)
+    aws.user_data = "#cloud-boothook\n#!/bin/sh\necho 'Defaults:ec2-user !requiretty' > /etc/sudoers.d/vagrant\necho"
+  end
+
+  # Run a simple provision script to setup packages
+  config.vm.provision :shell, :inline => <<-EOT
+    # Setup Puppet Labs repository for latest Puppet
+    rpm -q -i http://yum.puppetlabs.com/el/6Server/products/x86_64/puppetlabs-release-6-7.noarch.rpm
+    rpm -q --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+
+    # Set priority of puppetlabs repo above Amazon repos
+    [[ "$(grep 'priority=0' /etc/yum.repos.d/puppetlabs.repo)" == "" ]] && sed -i '/enabled=1/ a priority=0' /etc/yum.repos.d/puppetlabs.repo
+
+    # Install dependencies
+    yum install -y git rubygems gcc libxml2-devel libxslt-devel puppet hiera
+  EOT
+
+  # Amazon Linux default user is ec2-user
+  config.ssh.username = 'ec2-user'
+end
