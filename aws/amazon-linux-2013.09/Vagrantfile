@@ -5,7 +5,7 @@ Vagrant.configure('2') do |config|
   config.vm.provider :aws do |aws|
     aws.region          = 'us-east-1'
     aws.instance_type   = 'm1.small'
-    aws.security_groups = 'basic-web'
+    aws.security_groups = ['basic-web']
     aws.ami             = 'ami-35792c5c'
     aws.tags            = { 'Provisioner' => 'Vagrant' }
 
