@@ -2,17 +2,21 @@
 # vi: set ft=ruby :
 
 Vagrant.configure('2') do |config|
-  config.vm.provider :aws do |aws|
+  config.vm.provider :aws do |aws, override|
     aws.region          = 'us-east-1'
-    aws.instance_type   = 'm1.small'
-    aws.security_groups = ['basic-web']
-    aws.ami             = 'ami-35792c5c'
-    aws.tags            = { 'Provisioner' => 'Vagrant' }
+    aws.instance_type   = 't1.micro'
+    aws.security_groups = [ 'vagrant' ]
+    aws.tags            = { 'Provisioner' => 'vagrant-aws' }
 
-    # Default AMI is for us-east-1, substitute the proper AMI if we are
-    # launching in a different region
-    aws.region_config 'us-west-1', :ami => 'ami-687b4f2d'
-    aws.region_config 'us-west-2', :ami => 'ami-d03ea1e0'
+    aws.region_config 'us-east-1',      :ami => 'ami-bba18dd2'
+    aws.region_config 'us-west-1',      :ami => 'ami-a43909e1'
+    aws.region_config 'us-west-2',      :ami => 'ami-ccf297fc'
+    aws.region_config 'eu-west-1',      :ami => 'ami-5256b825'
+    aws.region_config 'ap-southeast-1', :ami => 'ami-b4baeee6'
+    aws.region_config 'ap-southeast-2', :ami => 'ami-5ba83761'
+    aws.region_config 'ap-northeast-1', :ami => 'ami-0d13700c'
+    aws.region_config 'sa-east-1',      :ami => 'ami-c99130d4'
+    aws.region_config 'us-gov-west-1',  :ami => 'ami-97fb9fb4'
 
     # Use cloud-init to enable sudo without PTY for Vagrant with a boothook
     # (See: https://github.com/mitchellh/vagrant-aws/issues/72#issuecomment-20384849)
@@ -21,7 +25,7 @@ Vagrant.configure('2') do |config|
 
   # Run a simple provision script to setup packages
   config.vm.provision :shell, :inline => <<-EOT
-    # Setup Puppet Labs repository for latest Puppet
+    # Setup Puppet Labs repository for latest Puppet (default is 2.7.25!)
     rpm -Uvh http://yum.puppetlabs.com/el/6Server/products/x86_64/puppetlabs-release-6-7.noarch.rpm
     rpm --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
 
@@ -30,7 +34,7 @@ Vagrant.configure('2') do |config|
 
     # Install dependencies
     yum clean all
-    yum install -y git rubygems gcc libxml2-devel libxslt-devel puppet hiera
+    yum install -y puppet facter hiera
   EOT
 
   # Amazon Linux default user is ec2-user
